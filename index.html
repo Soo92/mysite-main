@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KIS Stock</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Korea Investment & Securities</p>
+        <h1>계좌 · 주문 웹</h1>
+      </div>
+      <div class="status-wrap">
+        <span id="envBadge" class="badge">확인 중</span>
+        <span id="tokenBadge" class="badge muted">토큰 없음</span>
+        <button id="tokenBtn" class="secondary">토큰 발급/확인</button>
+      </div>
+    </header>
+
+    <div id="notice" class="notice hidden"></div>
+
+    <nav class="tabs" aria-label="메뉴">
+      <button class="tab active" data-tab="balance">계좌</button>
+      <button class="tab" data-tab="orders">주문/체결</button>
+      <button class="tab" data-tab="trade">매매</button>
+    </nav>
+
+    <section id="balancePanel" class="panel active">
+      <div class="section-head">
+        <div>
+          <h2>계좌 잔고</h2>
+          <p>한국투자 연속조회 커서로 페이지 단위 조회</p>
+        </div>
+        <button id="balanceReload">새로 조회</button>
+      </div>
+      <div id="summaryCards" class="cards"></div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>종목</th><th>보유</th><th>주문가능</th><th>평균단가</th><th>현재가</th><th>평가금액</th><th>평가손익</th><th>수익률</th></tr></thead>
+            <tbody id="balanceRows"></tbody>
+          </table>
+        </div>
+        <div class="pager"><button id="balancePrev" class="secondary" disabled>이전</button><span id="balancePage">1 페이지</span><button id="balanceNext" class="secondary" disabled>다음</button></div>
+      </div>
+    </section>
+
+    <section id="ordersPanel" class="panel">
+      <div class="section-head"><div><h2>주문 · 체결 내역</h2><p>최근 3개월 이내 조회 + 연속조회 페이징</p></div></div>
+      <form id="ordersForm" class="filters">
+        <label>시작일<input id="ordersStart" type="date"></label>
+        <label>종료일<input id="ordersEnd" type="date"></label>
+        <label>매매<select id="ordersSide"><option value="00">전체</option><option value="01">매도</option><option value="02">매수</option></select></label>
+        <label>체결<select id="ordersStatus"><option value="00">전체</option><option value="01">체결</option><option value="02">미체결</option></select></label>
+        <label>종목코드<input id="ordersCode" inputmode="numeric" maxlength="7" placeholder="선택"></label>
+        <button type="submit">조회</button>
+      </form>
+      <div class="table-card">
+        <div class="table-scroll"><table><thead><tr><th>일자</th><th>종목</th><th>구분</th><th>주문수량</th><th>주문가</th><th>체결수량</th><th>체결가</th><th>주문번호</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+        <div class="pager"><button id="ordersPrev" class="secondary" disabled>이전</button><span id="ordersPage">1 페이지</span><button id="ordersNext" class="secondary" disabled>다음</button></div>
+      </div>
+    </section>
+
+    <section id="tradePanel" class="panel">
+      <div class="section-head"><div><h2>현금 주문</h2><p>Worker의 주문 실행 스위치가 켜져 있어야 실제 주문 가능</p></div><span id="orderLock" class="badge muted">주문 잠금</span></div>
+      <div class="trade-grid">
+        <form id="tradeForm" class="trade-card">
+          <div class="segmented"><label><input type="radio" name="side" value="buy" checked><span>매수</span></label><label><input type="radio" name="side" value="sell"><span>매도</span></label></div>
+          <label>종목코드<div class="inline-input"><input id="tradeCode" required inputmode="numeric" maxlength="7" placeholder="005930"><button id="priceBtn" type="button" class="secondary">현재가</button></div></label>
+          <div id="priceInfo" class="price-info">종목코드를 입력하고 현재가를 조회하세요.</div>
+          <label>주문유형<select id="orderType"><option value="00">지정가</option><option value="01">시장가</option></select></label>
+          <label>수량<input id="tradeQty" required type="number" min="1" step="1" value="1"></label>
+          <label>가격<input id="tradePrice" required type="number" min="0" step="1" placeholder="지정가"></label>
+          <button id="orderSubmit" type="submit" class="danger">주문 전송</button>
+        </form>
+        <aside class="guide-card">
+          <h3>주문 보호</h3>
+          <ul><li>App Secret과 토큰은 GitHub Pages로 내려오지 않습니다.</li><li><code>KIS_ORDER_ENABLED=true</code>일 때만 Worker가 주문을 허용합니다.</li><li>전송 직전 종목·수량·가격 확인창이 한 번 더 뜹니다.</li><li>처음에는 <strong>모의투자</strong>로 검증하세요.</li></ul>
+          <pre id="orderResult">주문 결과가 여기에 표시됩니다.</pre>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
