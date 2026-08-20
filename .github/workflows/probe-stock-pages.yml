@@ -1,0 +1,43 @@
+name: Probe stock Pages
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - '.github/workflows/probe-stock-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Probe live URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://soo92.github.io/workout/stock/'
+          BODY_FILE=/tmp/stock-body.html
+          CODE="$(curl -L -sS --max-time 20 -o "$BODY_FILE" -w '%{http_code}' "${URL}?probe=${GITHUB_SHA}" || true)"
+          TITLE_OK=false
+          if grep -Fq '<title>KIS Stock</title>' "$BODY_FILE" 2>/dev/null; then TITLE_OK=true; fi
+          {
+            echo "url=${URL}"
+            echo "http_code=${CODE}"
+            echo "title_ok=${TITLE_OK}"
+            echo "checked_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > stock-pages-probe.txt
+      - name: Save probe result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add stock-pages-probe.txt
+          git commit -m 'ci: record stock Pages probe' || exit 0
+          git push origin HEAD:main
