@@ -24,18 +24,19 @@ jobs:
           probe() {
             NAME="$1"
             URL="$2"
-            EXPECT="$3"
             BODY="/tmp/${NAME}.html"
             CODE="$(curl -L -sS --max-time 20 -o "$BODY" -w '%{http_code}' "${URL}?probe=${GITHUB_SHA}" || true)"
-            TITLE_OK=false
-            if grep -Fq "$EXPECT" "$BODY" 2>/dev/null; then TITLE_OK=true; fi
             echo "${NAME}_url=${URL}"
             echo "${NAME}_http_code=${CODE}"
-            echo "${NAME}_title_ok=${TITLE_OK}"
           }
           {
-            probe root 'https://soo92.github.io/workout/' '<title>Workout App'
-            probe stock 'https://soo92.github.io/workout/stock/' '<title>KIS Stock</title>'
+            probe workout_root 'https://soo92.github.io/workout/'
+            probe workout_stock 'https://soo92.github.io/workout/stock/'
+            probe mysite_main 'https://soo92.github.io/mysite-main/'
+            probe mysite 'https://soo92.github.io/mysite/'
+            probe portfolio 'https://soo92.github.io/portfolio/'
+            probe cv 'https://soo92.github.io/cv/'
+            probe searchportal 'https://soo92.github.io/SearchPortal/'
             echo "checked_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } > stock-pages-probe.txt
       - name: Save probe result
