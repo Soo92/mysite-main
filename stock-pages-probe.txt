@@ -1,0 +1,4 @@
+url=https://soo92.github.io/workout/stock/
+http_code=404
+title_ok=false
+checked_at=2026-08-20T05:04:03Z
